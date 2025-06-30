@@ -1,0 +1,660 @@
+{
+  "name": "hackathon",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "20343184-3262-43c7-ad3f-688bb2706689",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        200
+      ],
+      "id": "5943581e-2168-4433-af57-e34372728611",
+      "name": "Webhook",
+      "webhookId": "20343184-3262-43c7-ad3f-688bb2706689"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bac759de-9d1b-4884-a332-baa1ff192e89",
+              "name": "employee_name",
+              "value": "={{ $json.body.employee_name }}",
+              "type": "string"
+            },
+            {
+              "id": "082c36e0-f6a8-4be9-9079-c73f13954d20",
+              "name": "raw_data",
+              "value": "={{ $json.body.original_data }}",
+              "type": "string"
+            },
+            {
+              "id": "af09560d-bf84-437d-af01-27c2584588f8",
+              "name": "body.email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -40,
+        200
+      ],
+      "id": "fd863afd-e24a-4d75-805a-5a7e59430e20",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI assistant that writes short and professional performance summaries.\n\nGiven the following employee performance review text, write a concise and meaningful summary highlighting both achievements and areas for improvement. Keep it under 100 words.\n\nPerformance Review:\n{{ $('Edit Fields').item.json.raw_data }}\n\nSummary:\n\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        640,
+        40
+      ],
+      "id": "b26fd511-c897-43e6-986d-e2e48df31c27",
+      "name": "Summary generator"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        440,
+        360
+      ],
+      "id": "f2ed7c22-9db8-42ea-989d-80f70447416c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y5cyhPHJbkv2KyHg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=From the following performance feedback, extract and list the employee's key strengths in clear and concise bullet points.\n\nPerformance Feedback:\n{{ $('Edit Fields').item.json.raw_data }}\n\nKey Strengths:\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        680,
+        280
+      ],
+      "id": "368cbaf2-ac1f-4f83-9b0b-d0890ca4e743",
+      "name": "Strengths"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=From the following performance review, list only the improvement areas or weaknesses for the employee in clear and concise bullet points. Avoid repeating strengths or achievements.\n\nPerformance Review:\n{{ $('Edit Fields').item.json.raw_data }}\n\nAreas for Improvement:\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        700,
+        540
+      ],
+      "id": "b7320d5c-b397-44eb-a2aa-ad7d9e880ea1",
+      "name": "AI - Improvements"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        440,
+        680
+      ],
+      "id": "53c43060-ff98-4bbd-9729-a7f83c6f742b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y5cyhPHJbkv2KyHg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the performance review below, give a performance rating **out of 10** for the employee. Consider technical skills, collaboration, communication, initiative, and overall impact. Justify the rating briefly in 1-2 lines.\n\nPerformance Review:\n{{ $('Edit Fields').item.json.raw_data }}\n\nRating (out of 10) with justification:\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        700,
+        780
+      ],
+      "id": "7be6cfa2-98a1-4125-92d7-57e37fe9a3cf",
+      "name": "Rating"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        420,
+        940
+      ],
+      "id": "152e8954-f801-4070-918d-ad9ebe133938",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y5cyhPHJbkv2KyHg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the employee's performance data below, write a short and professional final review summary. Highlight key strengths and improvement areas, then end with a brief overall comment (all in one paragraph, under 600 characters).\n\nPerformance Data:\n{{ $('Edit Fields').item.json.raw_data }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        700,
+        1000
+      ],
+      "id": "28f57465-3d4d-4b29-91fe-ec3e35d5b622",
+      "name": "Final summary"
+    },
+    {
+      "parameters": {
+        "numberInputs": 6
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1480,
+        260
+      ],
+      "id": "ab846ae5-ae68-42ef-b13e-47b5f52b8b0b",
+      "name": "Merge AI Outputs"
+    },
+    {
+      "parameters": {
+        "jsCode": "function clean(value) {\n  if (!value || value === \"N/A\") return \"\";\n  return value.toString().trim();\n}\n\nfunction flatten(text) {\n  return (text || \"\")\n    .replace(/\\n/g, \" \")\n    .replace(/\\*/g, \"\")\n    .replace(/\\s+/g, \" \")\n    .trim();\n}\n\nconst rawData = $input.all().map((item) => item.json);\nconst summaryData = $(\"Summary generator\").all().map((item) => item.json.output || \"\");\nconst strengthsData = $(\"Strengths\").all().map((item) => item.json.output || \"\");\nconst improvementsData = $(\"AI - Improvements\").all().map((item) => item.json.output || \"\");\nconst ratingData = $(\"Rating\").all().map((item) => item.json.output || \"\");\nconst finalSummaryData = $(\"Final summary\").all().map((item) => item.json.output || \"\");\n\nconst output = rawData.map((data, index) => {\n  const out = data.output || {};\n\n  return {\n    name: clean(out.name),\n    department: clean(out.department),\n    role: clean(out.role),\n    email: clean(out.email),\n    summary: flatten(summaryData[index]),\n    strengths: flatten(strengthsData[index]),\n    improvements: flatten(improvementsData[index]),\n    finalSummary: flatten(finalSummaryData[index]),\n    rating: flatten(ratingData[index]),\n  };\n});\n\nreturn output.map((row) => ({ json: row }));\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        320
+      ],
+      "id": "490d61b6-fc66-45ec-8b7d-48fbff7dec3a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "=nuya4807@gmail.com",
+        "subject": "=Performance Review Summary:{{ $json.Name }}",
+        "message": "=<p>Hi {{ $json.Name }},</p>\n\n<p>Here is your AI-generated performance review summary based on the recent evaluation cycle:</p>\n\n<p><strong><u>Employee Details:</u></strong><br>\nName: {{ $json.Name }}<br>\nDepartment: {{ $json.Department }}<br>\nRole:{{ $json.Role }} </p>\n\n<p><strong><u>Key Strengths:</u></strong><br>\n{{ $json.Strengths }}</p>\n\n<p><strong><u>Areas for Improvement:</u></strong><br>\n{{ $json.Improvements }}</p>\n\n<p><strong><u>Performance Summary:</u></strong><br>\n{{ $json['Final Summary'] }}</p>\n\n<p><strong><u>Performance Score:</u></strong><br>\n{{ $json.Rating }} / 10</p>\n\n<p>Best regards,<br>\nHR Team</p>\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2520,
+        320
+      ],
+      "id": "6a8ea144-5fa7-49b0-bfdd-8d2668b0ff2b",
+      "name": "Gmail",
+      "webhookId": "0c513d91-e819-42d0-a1a5-87fb6f54dc1d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LFT1EAtXPrt6W2Gv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BPglmEX5xe2TBCFqMCfCCNWK_4NhL2IWnQ5BroCEHw4",
+          "mode": "list",
+          "cachedResultName": "data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BPglmEX5xe2TBCFqMCfCCNWK_4NhL2IWnQ5BroCEHw4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BPglmEX5xe2TBCFqMCfCCNWK_4NhL2IWnQ5BroCEHw4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Summary": "={{ $json.summary }}",
+            "Strengths": "={{ $json.strengths }}",
+            "Improvements": "={{ $json.improvements }}",
+            "Department": "={{ $json.department }}",
+            "Role": "={{ $json.role }}",
+            "Rating": "={{ $json.rating }}",
+            "Final Summary": "={{ $json.finalSummary }}",
+            "Name": "={{ $json.name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Strengths",
+              "displayName": "Strengths",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Improvements",
+              "displayName": "Improvements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Final Summary",
+              "displayName": "Final Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2020,
+        320
+      ],
+      "id": "6e0a2827-4113-419f-ab99-dcb3a163edf4",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XuZPajzgjaZ8gqAX",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        220,
+        420
+      ],
+      "id": "9e1b18ca-8033-4983-a982-603929b09947",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y5cyhPHJbkv2KyHg",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "=Extract the employee's name, department, and role from the following performance data:\n\n{{$json.raw_data}}\n\nReturn only a JSON object with keys: name, department, role, and email\n",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "name",
+              "description": "The full name of the employee",
+              "required": true
+            },
+            {
+              "name": "department",
+              "description": "The department the employee works in (e.g., Software Development)",
+              "required": true
+            },
+            {
+              "name": "role",
+              "description": "The employee's role or job title (e.g., Full Stack Developer)",
+              "required": true
+            },
+            {
+              "name": "email",
+              "description": "={{ $json.body.email }}",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.1,
+      "position": [
+        180,
+        200
+      ],
+      "id": "0df85594-e404-4cd3-9c69-4ba930da0cea",
+      "name": "extractor"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        320
+      ],
+      "id": "6125a414-ee7d-47e0-84f5-302477ab4f97",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summary generator",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Strengths",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summary generator": {
+      "main": [
+        [
+          {
+            "node": "Strengths",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Strengths": {
+      "main": [
+        [
+          {
+            "node": "AI - Improvements",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Improvements",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Improvements": {
+      "main": [
+        [
+          {
+            "node": "Rating",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Rating",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Final summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rating": {
+      "main": [
+        [
+          {
+            "node": "Final summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Final summary": {
+      "main": [
+        [
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Merge AI Outputs": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extractor": {
+      "main": [
+        [
+          {
+            "node": "Summary generator",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge AI Outputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d9209b9e-8917-4b79-a3f3-c8ddf8f87463",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93756752372d6bf1038003222e5857c9b9aafb2114c806f20c05f80e1ba46750"
+  },
+  "id": "ERUmgpwyU4A8O8Bf",
+  "tags": []
+}
